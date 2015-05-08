@@ -69,10 +69,13 @@ def sweepFiles(rootDir, keyExtractionFunction = None):
 		dictionary of pandas data frames with key of directory name
 			containing the IMG data directory and value of phylodistDataFrames
 	"""
-	print("scanning " + rootDir + " for files ending with ." + PHYLODIST_FILE_SUFFIX)
-
 	if (keyExtractionFunction is None):
 		keyExtractionFunction = defaultKeyExtractionFunction
+
+	if (not os.path.isdir(rootDir)):
+		raise(IOError)
+
+	print("scanning " + rootDir + " for files ending with ." + PHYLODIST_FILE_SUFFIX)
 
 	phylodistSweepDict = {}
 	for dirName, subdirList, fileList in os.walk(rootDir):
