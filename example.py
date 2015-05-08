@@ -1,15 +1,16 @@
 #!/usr/bin/python
 
-# this might be converted to tests one day
-
 import phylodist.io
 import phylodist.histogram
 
-phylodist.io.sweepFiles("/dacb/globus");
-#phylodistDataFrame = phylodist.io.loadFile("examples/example.phylodist");
-#taxHistograms = phylodist.histogram.computeAll(phylodistDataFrame);
+phylos = phylodist.io.sweepFiles("/dacb/globus")
+#phylos = phylodist.io.sweepFiles("examples")
+sampleDictTaxHistDict = phylodist.histogram.computeAllForSamples(phylos)
 
-#print(taxHistograms['kingdom']);
+#print(sampleDictTaxHistDict['exampleSample']['kingdom'])
+#print(sampleDictTaxHistDict['exampleSample']['phylum'])
+
+#print(taxHistograms['kingdom'])
 #print(taxHistograms['phylum'])
 #print(taxHistograms['class'])
 #print(taxHistograms['order'])
