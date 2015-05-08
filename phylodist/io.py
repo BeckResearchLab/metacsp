@@ -2,6 +2,8 @@ import sys
 import csv
 import string
 
+import pandas as pd
+
 from phylodist.constants import *
 
 def loadFile(filename):
@@ -43,4 +45,6 @@ def loadFile(filename):
 		record.pop(TAXONOMY_FIELD);
 		record.extend(taxList);
 
-	return(data)
+	phylodistDataFrame = pd.DataFrame(data, columns=PHYLODIST_HEADER + TAXONOMY_HIERARCHY)
+
+	return(phylodistDataFrame)
