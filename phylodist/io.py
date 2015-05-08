@@ -19,6 +19,10 @@ def loadFile(filename, verbose=False):
 		pandas dataframe with records
 	"""
 
+	# type checking
+	if (not isinstance(verbose, bool)):
+		raise(TypeError)
+
 	# read the tab delimited file in
 	data = list(csv.reader(open(filename, 'rb'), delimiter='\t'))
 	if (verbose):
