@@ -47,6 +47,7 @@ def computeAllForSamples(phylodistSweepDict):
 	sampleDictTaxHistDict = {}
 	for key in phylodistSweepDict.keys():
 		sys.stdout.write(".")
+		sys.stdout.flush()
 		sampleDictTaxHistDict[key] = computeAll(phylodistSweepDict[key])
 	print("done")
 
