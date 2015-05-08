@@ -96,6 +96,8 @@ def sweepFiles(rootDir, keyExtractionFunction = None):
 			phylodistSweepDict[sampleKey] = phylodistDataFrame
 			print("found " + str(len(phylodistDataFrame.index)) + " rows for sample " + sampleKey)
 
+	print("found " + str(len(phylodistSweepDict)) + " files")
+
 	return(phylodistSweepDict)
 
 def defaultKeyExtractionFunction(path):
