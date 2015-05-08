@@ -20,6 +20,6 @@ def computeAll(phylodistDataFrame):
 	for i, taxLevel in enumerate(TAXONOMY_HIERARCHY):
 		taxHistDict[taxLevel] = pd.DataFrame(
 				{ 'count' : phylodistDataFrame.groupby(TAXONOMY_HIERARCHY[0:i+1]).size() }
-			).sort('count', ascending=False);
+			).sort('count', ascending=False)
 
 	return(taxHistDict)
