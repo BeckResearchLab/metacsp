@@ -20,12 +20,12 @@ def loadFile(filename, verbose=False):
 	"""
 
 	# type checking
-	if (not isinstance(verbose, bool)):
-		raise(TypeError)
+	if not isinstance(verbose, bool):
+		raise TypeError('verbose argument must be a boolean')
 
 	# read the tab delimited file in
 	data = list(csv.reader(open(filename, 'rb'), delimiter='\t'))
-	if (verbose):
+	if verbose:
 		print("found " + str(len(data)) + " records in file " + filename)
 
 	# process records for sanity checking number of records
@@ -35,27 +35,25 @@ def loadFile(filename, verbose=False):
 		row = row + 1
 		# check the record length against the expected value
 		thisRecLen = len(record)
-		if (thisRecLen != EXPECTED_RECORD_LENGTH):
-			print("unexpected record length found on row " + str(row) + 
+		if thisRecLen != EXPECTED_RECORD_LENGTH:
+			raise ValueError("unexpected record length found on row " + str(row) + 
 				" found " + str(thisRecLen) + " and expected " + 
 				str(EXPECTED_RECORD_LENGTH))
-			sys.exit(1)
 		# parse the taxonomy string
 		taxString = record[TAXONOMY_FIELD]
 		taxList = string.split(taxString, ";")
 		taxListLen = len(taxList)
-		if (taxListLen != EXPECTED_TAXONOMY_LENGTH):
-			print("unexpected taxonomy length found on row " + str(row) + 
+		if taxListLen != EXPECTED_TAXONOMY_LENGTH:
+			raise ValueError("unexpected taxonomy length found on row " + str(row) + 
 				" found " + str(taxListLen) + " and expected " + 
 				str(EXPECTED_TAXONOMY_LENGTH))
-			sys.exit(1)
 		# replace the taxonomy string with the list in our record
 		record.pop(TAXONOMY_FIELD)
 		record.extend(taxList)
 
 	phylodistDataFrame = pd.DataFrame(data, columns=PHYLODIST_HEADER + TAXONOMY_HIERARCHY)
 
-	return(phylodistDataFrame)
+	return phylodistDataFrame
 
 def sweepFiles(rootDir, keyExtractionFunction = None):
 	"""Walk a directory looking for phylodist files and load them
@@ -69,24 +67,24 @@ def sweepFiles(rootDir, keyExtractionFunction = None):
 		dictionary of pandas data frames with key of directory name
 			containing the IMG data directory and value of phylodistDataFrames
 	"""
-	if (keyExtractionFunction is None):
+	if keyExtractionFunction is None:
 		keyExtractionFunction = defaultKeyExtractionFunction
 
-	if (not os.path.isdir(rootDir)):
-		raise(IOError)
+	if not os.path.isdir(rootDir):
+		raise IOError(rootDir + " is not a directory")
 
 	print("scanning " + rootDir + " for files ending with ." + PHYLODIST_FILE_SUFFIX)
 
 	phylodistSweepDict = {}
 	for dirName, subdirList, fileList in os.walk(rootDir):
 		baseDir = string.split(dirName, "/")[-1]
-		if (baseDir != IMG_DATA_DIRECTORY_NAME):
+		if baseDir != IMG_DATA_DIRECTORY_NAME:
 			continue
 		# this is a directory that contains the IMG data directory
 		# look for a file ending in the phylodist suffix
 		for filename in fileList:
 			suffix = string.split(filename, ".")[-1]
-			if (suffix != PHYLODIST_FILE_SUFFIX):
+			if suffix != PHYLODIST_FILE_SUFFIX:
 				continue
 			# valid phylodist file, let's load it!
 			phylodistDataFrame = loadFile(dirName + "/" + filename)
@@ -98,7 +96,7 @@ def sweepFiles(rootDir, keyExtractionFunction = None):
 
 	print("found " + str(len(phylodistSweepDict)) + " files")
 
-	return(phylodistSweepDict)
+	return phylodistSweepDict
 
 def defaultKeyExtractionFunction(path):
 	"""Parse a sample ID to use as a dictionary key in samples
