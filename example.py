@@ -7,7 +7,7 @@ import phylodist.histogram
 phylos = phylodist.io.sweepFiles("examples")
 sampleDictTaxHistDict = phylodist.histogram.computeAllForSamples(phylos)
 
-phylodist.histogram.plotForSamples(sampleDictTaxHistDict, 'phylum')
+phylodist.histogram.plotForSamples(sampleDictTaxHistDict, 'class')
 
 #print(sampleDictTaxHistDict['exampleSample']['kingdom'])
 #print(sampleDictTaxHistDict['exampleSample']['phylum'])

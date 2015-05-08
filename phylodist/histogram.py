@@ -93,6 +93,6 @@ def plotForSamples(sampleDictTaxHistDict, taxonomyLevel):
 				)
 		first = False
 
-	plot = mergedPhylodistHist.T.plot(kind='bar', stacked=True)
+	plot = mergedPhylodistHist.T.plot(kind='bar', stacked=True, legend=False)
 	fig = plot.get_figure()
 	fig.savefig("output.png")
