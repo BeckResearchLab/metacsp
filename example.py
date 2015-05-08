@@ -5,11 +5,12 @@
 import phylodist.io
 import phylodist.histogram
 
-phylodistDataFrame = phylodist.io.loadFile("examples/example.phylodist");
-taxHistograms = phylodist.histogram.computeAll(phylodistDataFrame);
+phylodist.io.sweepFiles("/dacb/globus");
+#phylodistDataFrame = phylodist.io.loadFile("examples/example.phylodist");
+#taxHistograms = phylodist.histogram.computeAll(phylodistDataFrame);
 
 #print(taxHistograms['kingdom']);
 #print(taxHistograms['phylum'])
 #print(taxHistograms['class'])
-print(taxHistograms['order'])
+#print(taxHistograms['order'])
 #print(taxHistograms['family'])
