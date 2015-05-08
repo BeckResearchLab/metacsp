@@ -20,5 +20,44 @@ class test_LoadFile(unittest.TestCase):
 		with self.assertRaises(IOError):
 			io.loadFile("examples")
 
+	def test_loadFile_exampleValues(self):
+		# check the length
+		pdDF = io.loadFile("examples/example[exampleSample]/IMG_Data/example.phylodist")
+		self.assertEquals(len(pdDF.index), 59476)
+		# spot check row 98's locus_tag
+		self.assertEquals(pdDF.at[97,'locus_tag'], "Ga0066528_1383641")
+
+
+class test_defaultKeyExtractionFunction(unittest.TestCase):
+
+	def test_defaultKeyExtractionFunction_value(self):
+		self.assertEquals(io.defaultKeyExtractionFunction("examples/example[exampleSample]/IMG_Data/example.phylodist"), "exampleSample")
+
+
+class test_sweepFiles(unittest.TestCase):
+
+	def test_sweepFiles_fileNotDirectory(self):
+		with self.assertRaises(IOError):
+			io.sweepFiles("phylodist/test.py")
+
+	def test_sweepFiles_nonExistentDir(self):
+		with self.assertRaises(IOError):
+			io.sweepFiles("directory_does_not_exist")
+
+	def test_sweepFiles_directoryType(self):
+		with self.assertRaises(TypeError):
+			io.sweepFiles(42)
+
+	def test_sweepFiles_values(self):
+		pdSD = io.sweepFiles("examples");
+		# check the length of the dictionary
+		self.assertEquals(len(pdSD), 2)
+		# verify the sample key names are correct
+		for key in pdSD.keys():
+			self.assertIn(key, ["exampleSample", "anotherExampleSample"])
+		# spot check specific values in the dictionary's data frame
+		self.assertEquals(pdSD['exampleSample'].at[97, 'locus_tag'], "Ga0066528_1383641")
+		self.assertEquals(pdSD['anotherExampleSample'].at[1013, 'locus_tag'], "Ga0066521_1490921")
+
 if __name__ == '__main__':
 	unittest.main()
