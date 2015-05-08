@@ -20,9 +20,17 @@ class test_LoadFile(unittest.TestCase):
 		with self.assertRaises(IOError):
 			io.loadFile("examples")
 
+	def test_loadFile_incorrectFieldCount(self):
+		with self.assertRaises(ValueError):
+			io.loadFile("examples/invalid/badRecordLength.phylodist")
+
+	def test_loadFile_incorrectTaxFieldCount(self):
+		with self.assertRaises(ValueError):
+			io.loadFile("examples/invalid/badTaxRecordLength.phylodist")
+
 	def test_loadFile_exampleValues(self):
 		# check the length
-		pdDF = io.loadFile("examples/example[exampleSample]/IMG_Data/example.phylodist")
+		pdDF = io.loadFile("examples/valid/example[exampleSample]/IMG_Data/example.phylodist", verbose=True)
 		self.assertEquals(len(pdDF.index), 59476)
 		# spot check row 98's locus_tag
 		self.assertEquals(pdDF.at[97,'locus_tag'], "Ga0066528_1383641")
@@ -31,7 +39,7 @@ class test_LoadFile(unittest.TestCase):
 class test_defaultKeyExtractionFunction(unittest.TestCase):
 
 	def test_defaultKeyExtractionFunction_value(self):
-		self.assertEquals(io.defaultKeyExtractionFunction("examples/example[exampleSample]/IMG_Data/example.phylodist"), "exampleSample")
+		self.assertEquals(io.defaultKeyExtractionFunction("examples/valid/example[exampleSample]/IMG_Data/example.phylodist"), "exampleSample")
 
 
 class test_sweepFiles(unittest.TestCase):
