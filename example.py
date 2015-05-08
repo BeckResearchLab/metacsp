@@ -3,9 +3,11 @@
 import phylodist.io
 import phylodist.histogram
 
-phylos = phylodist.io.sweepFiles("/dacb/globus")
-#phylos = phylodist.io.sweepFiles("examples")
+#phylos = phylodist.io.sweepFiles("/dacb/globus")
+phylos = phylodist.io.sweepFiles("examples")
 sampleDictTaxHistDict = phylodist.histogram.computeAllForSamples(phylos)
+
+phylodist.histogram.plotForSamples(sampleDictTaxHistDict, 'phylum')
 
 #print(sampleDictTaxHistDict['exampleSample']['kingdom'])
 #print(sampleDictTaxHistDict['exampleSample']['phylum'])

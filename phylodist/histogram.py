@@ -2,6 +2,8 @@ import sys
 import collections
 import operator
 
+import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
 
 from phylodist.constants import *
@@ -52,3 +54,45 @@ def computeAllForSamples(phylodistSweepDict):
 	print("done")
 
 	return(sampleDictTaxHistDict)
+
+def plotForSamples(sampleDictTaxHistDict, taxonomyLevel):
+	"""Create a stacked bar chart for the taxonomy abundance percentages
+		for a specific taxonomic level
+
+	Args:
+		sampleDictTaxHistDict (dict): dictionary of phylodistDataFrames for
+			all samples
+		taxonomyLevel (str): taxonomy level to use in chart
+
+	Returns:
+		? figure or nothing ? undecided
+	"""
+	
+	if (not taxonomyLevel in TAXONOMY_HIERARCHY):
+		raise ValueError
+
+	samples = len(sampleDictTaxHistDict)
+	if (samples < 1):
+		raise ValueError
+
+	first = True
+	for sample in sampleDictTaxHistDict.keys():
+		if (first):
+			tmpDF = sampleDictTaxHistDict[sample][taxonomyLevel].drop('count', 1)
+			mergedPhylodistHist = tmpDF.rename(
+					columns = { 'percent' : sample }
+				)
+		else:
+			tmpDF = sampleDictTaxHistDict[sample][taxonomyLevel].drop('count', 1)
+			tmpDF.rename(
+					columns = { 'percent' : sample },
+					inplace = True
+				)
+			mergedPhylodistHist = pd.merge(mergedPhylodistHist, tmpDF,
+					how="outer", left_index=True, right_index=True
+				)
+		first = False
+
+	plot = mergedPhylodistHist.T.plot(kind='bar', stacked=True)
+	fig = plot.get_figure()
+	fig.savefig("output.png")
