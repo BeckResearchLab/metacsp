@@ -4,10 +4,11 @@ import phylodist.io
 import phylodist.histogram
 
 #phylos = phylodist.io.sweepFiles("/dacb/globus")
-phylos = phylodist.io.sweepFiles("examples")
+phylos = phylodist.io.sweepFiles("examples/valid")
 sampleDictTaxHistDict = phylodist.histogram.computeAllForSamples(phylos)
+taxonomyDictTaxHist = phylodist.histogram.mergeAcrossSamplesTaxLevels(sampleDictTaxHistDict)
 
-phylodist.histogram.plotForSamples(sampleDictTaxHistDict, 'class')
+phylodist.histogram.plotForSamples(taxonomyDictTaxHist['class'])
 
 #print(sampleDictTaxHistDict['exampleSample']['kingdom'])
 #print(sampleDictTaxHistDict['exampleSample']['phylum'])
