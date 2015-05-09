@@ -3,12 +3,19 @@
 import phylodist.io
 import phylodist.histogram
 
-#phylos = phylodist.io.sweepFiles("/dacb/globus")
-phylos = phylodist.io.sweepFiles("examples/valid")
+phylos = phylodist.io.sweepFiles("/dacb/globus")
+#phylos = phylodist.io.sweepFiles("examples/valid")
 sampleDictTaxHistDict = phylodist.histogram.computeAllForSamples(phylos)
 taxonomyDictTaxHist = phylodist.histogram.mergeAcrossSamplesTaxLevels(sampleDictTaxHistDict)
 
-phylodist.histogram.plotForSamples(taxonomyDictTaxHist['class'])
+#phylodist.histogram.plotForSamples(taxonomyDictTaxHist['class'])
+
+import pandas as pd
+
+writer = pd.ExcelWriter('output.xlsx')
+for taxonomyLevel in taxonomyDictTaxHist.keys():
+	taxonomyDictTaxHist[taxonomyLevel].to_excel(writer, taxonomyLevel)
+writer.save()
 
 #print(sampleDictTaxHistDict['exampleSample']['kingdom'])
 #print(sampleDictTaxHistDict['exampleSample']['phylum'])
