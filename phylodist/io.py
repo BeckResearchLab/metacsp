@@ -1,11 +1,15 @@
 import os
-import sys
 import csv
 import string
 
 import pandas as pd
 
-from phylodist.constants import *
+from phylodist.constants import (
+	EXPECTED_RECORD_LENGTH, TAXONOMY_FIELD, EXPECTED_TAXONOMY_LENGTH,
+	PHYLODIST_HEADER, PHYLODIST_FILE_SUFFIX, IMG_DATA_DIRECTORY_NAME,
+	TAXONOMY_HIERARCHY
+)
+
 
 def loadFile(filename, verbose=False):
 	"""Load a phylodist file and return a pandas dataframe
@@ -36,26 +40,33 @@ def loadFile(filename, verbose=False):
 		# check the record length against the expected value
 		thisRecLen = len(record)
 		if thisRecLen != EXPECTED_RECORD_LENGTH:
-			raise ValueError("unexpected record length found on row " + str(row) + 
-				" found " + str(thisRecLen) + " and expected " + 
-				str(EXPECTED_RECORD_LENGTH))
+			raise ValueError(
+				"unexpected record length found on row " + str(row) +
+				" found " + str(thisRecLen) + " and expected " +
+				str(EXPECTED_RECORD_LENGTH)
+			)
 		# parse the taxonomy string
 		taxString = record[TAXONOMY_FIELD]
 		taxList = string.split(taxString, ";")
 		taxListLen = len(taxList)
 		if taxListLen != EXPECTED_TAXONOMY_LENGTH:
-			raise ValueError("unexpected taxonomy length found on row " + str(row) + 
-				" found " + str(taxListLen) + " and expected " + 
-				str(EXPECTED_TAXONOMY_LENGTH))
+			raise ValueError(
+				"unexpected taxonomy length found on row " + str(row) +
+				" found " + str(taxListLen) + " and expected " +
+				str(EXPECTED_TAXONOMY_LENGTH)
+			)
 		# replace the taxonomy string with the list in our record
 		record.pop(TAXONOMY_FIELD)
 		record.extend(taxList)
 
-	phylodistDataFrame = pd.DataFrame(data, columns=PHYLODIST_HEADER + TAXONOMY_HIERARCHY)
+	phylodistDataFrame = pd.DataFrame(
+		data, columns=PHYLODIST_HEADER + TAXONOMY_HIERARCHY
+	)
 
 	return phylodistDataFrame
 
-def sweepFiles(rootDir, keyExtractionFunction = None):
+
+def sweepFiles(rootDir, keyExtractionFunction=None):
 	"""Walk a directory looking for phylodist files and load them
 
 	Args:
@@ -73,7 +84,9 @@ def sweepFiles(rootDir, keyExtractionFunction = None):
 	if not os.path.isdir(rootDir):
 		raise IOError(rootDir + " is not a directory")
 
-	print("scanning " + rootDir + " for files ending with ." + PHYLODIST_FILE_SUFFIX)
+	print(
+		"scanning " + rootDir + " for files ending with ." + PHYLODIST_FILE_SUFFIX
+	)
 
 	phylodistSweepDict = {}
 	for dirName, subdirList, fileList in os.walk(rootDir):
@@ -92,11 +105,15 @@ def sweepFiles(rootDir, keyExtractionFunction = None):
 			sampleKey = keyExtractionFunction(dirName + "/" + filename)
 			# add the key to the dictionary with the data frame
 			phylodistSweepDict[sampleKey] = phylodistDataFrame
-			print("found " + str(len(phylodistDataFrame.index)) + " rows for sample " + sampleKey)
+			print(
+				"found " + str(len(phylodistDataFrame.index)) +
+				" rows for sample " + sampleKey
+			)
 
 	print("found " + str(len(phylodistSweepDict)) + " files")
 
 	return phylodistSweepDict
+
 
 def defaultKeyExtractionFunction(path):
 	"""Parse a sample ID to use as a dictionary key in samples

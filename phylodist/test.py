@@ -2,8 +2,9 @@ import unittest
 
 import io
 
+
 class test_LoadFile(unittest.TestCase):
-	
+
 	def test_loadFile_filenameType(self):
 		with self.assertRaises(TypeError):
 			io.loadFile(42)
@@ -30,16 +31,24 @@ class test_LoadFile(unittest.TestCase):
 
 	def test_loadFile_exampleValues(self):
 		# check the length
-		pdDF = io.loadFile("examples/valid/example[exampleSample]/IMG_Data/example.phylodist", verbose=True)
+		pdDF = io.loadFile(
+			"examples/valid/example[exampleSample]/IMG_Data/example.phylodist",
+			verbose=True
+		)
 		self.assertEquals(len(pdDF.index), 59476)
 		# spot check row 98's locus_tag
-		self.assertEquals(pdDF.at[97,'locus_tag'], "Ga0066528_1383641")
+		self.assertEquals(pdDF.at[97, 'locus_tag'], "Ga0066528_1383641")
 
 
 class test_defaultKeyExtractionFunction(unittest.TestCase):
 
 	def test_defaultKeyExtractionFunction_value(self):
-		self.assertEquals(io.defaultKeyExtractionFunction("examples/valid/example[exampleSample]/IMG_Data/example.phylodist"), "exampleSample")
+		self.assertEquals(
+			io.defaultKeyExtractionFunction(
+				"examples/valid/example[exampleSample]/IMG_Data/example.phylodist"
+			),
+			"exampleSample"
+		)
 
 
 class test_sweepFiles(unittest.TestCase):
@@ -57,15 +66,19 @@ class test_sweepFiles(unittest.TestCase):
 			io.sweepFiles(42)
 
 	def test_sweepFiles_values(self):
-		pdSD = io.sweepFiles("examples");
+		pdSD = io.sweepFiles("examples")
 		# check the length of the dictionary
 		self.assertEquals(len(pdSD), 2)
 		# verify the sample key names are correct
 		for key in pdSD.keys():
 			self.assertIn(key, ["exampleSample", "anotherExampleSample"])
 		# spot check specific values in the dictionary's data frame
-		self.assertEquals(pdSD['exampleSample'].at[97, 'locus_tag'], "Ga0066528_1383641")
-		self.assertEquals(pdSD['anotherExampleSample'].at[1013, 'locus_tag'], "Ga0066521_1490921")
+		self.assertEquals(
+			pdSD['exampleSample'].at[97, 'locus_tag'], "Ga0066528_1383641"
+		)
+		self.assertEquals(
+			pdSD['anotherExampleSample'].at[1013, 'locus_tag'], "Ga0066521_1490921"
+		)
 
 if __name__ == '__main__':
 	unittest.main()

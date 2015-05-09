@@ -1,12 +1,11 @@
 import sys
-import collections
-import operator
 
-import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 
-from phylodist.constants import *
+from phylodist.constants import (
+	TAXONOMY_HIERARCHY
+)
+
 
 def computeAll(phylodistDataFrame):
 	"""Create a histogram of occurences at taxonomy levels
@@ -23,14 +22,17 @@ def computeAll(phylodistDataFrame):
 	for i, taxLevel in enumerate(TAXONOMY_HIERARCHY):
 		# first, let's compute a count column using the size aggregate of a groupby
 		taxHistDict[taxLevel] = pd.DataFrame(
-				{
-					'count'    : phylodistDataFrame.groupby(TAXONOMY_HIERARCHY[0:i+1]).size()
-				}
-			).sort('count', ascending=False)
+			{
+				'count': phylodistDataFrame.groupby(TAXONOMY_HIERARCHY[0:i + 1]).size()
+			}
+		).sort('count', ascending=False)
 		# next, append the percent column
-		taxHistDict[taxLevel]['percent'] = taxHistDict[taxLevel].apply(lambda x: 100*x/float(x.sum()))
+		taxHistDict[taxLevel]['percent'] = taxHistDict[taxLevel].apply(
+			lambda x: 100 * x / float(x.sum())
+		)
 
 	return taxHistDict
+
 
 def computeAllForSamples(phylodistSweepDict):
 	"""Create histograms of occurences at taxonomy levels for
@@ -55,6 +57,7 @@ def computeAllForSamples(phylodistSweepDict):
 
 	return sampleDictTaxHistDict
 
+
 def validateSampleDictTaxHistDict(sampleDictTaxHistDict):
 	"""Sanity check a sampleDictTaxHistDict
 		Primarily used by merge functions
@@ -62,7 +65,7 @@ def validateSampleDictTaxHistDict(sampleDictTaxHistDict):
 	Args:
 		sampleDictTaxHistDict (dict): dictionary of phylodistDataFrames for
 			all samples
-	
+
 	Returns:
 		nothing, raises errors on sanity failures
 	"""
@@ -70,7 +73,10 @@ def validateSampleDictTaxHistDict(sampleDictTaxHistDict):
 		raise TypeError("argument sampleDictTaxHistDict should be a dict")
 	samples = len(sampleDictTaxHistDict)
 	if samples < 1:
-		raise ValueError("argument sampleDictTaxHistDict must have at least one entry")
+		raise ValueError(
+			"argument sampleDictTaxHistDict must have at least one entry"
+		)
+
 
 def mergeAcrossSamplesTaxLevels(sampleDictTaxHistDict):
 	"""Create a dictionary of data frames that are merged at taxonomy
@@ -88,7 +94,9 @@ def mergeAcrossSamplesTaxLevels(sampleDictTaxHistDict):
 
 	taxonomyDictTaxHist = {}
 	for taxonomyLevel in TAXONOMY_HIERARCHY:
-		taxonomyDictTaxHist[taxonomyLevel] = mergeAcrossSamples(sampleDictTaxHistDict, taxonomyLevel)
+		taxonomyDictTaxHist[taxonomyLevel] = mergeAcrossSamples(
+			sampleDictTaxHistDict, taxonomyLevel
+		)
 
 	return taxonomyDictTaxHist
 
@@ -105,7 +113,7 @@ def mergeAcrossSamples(sampleDictTaxHistDict, taxonomyLevel):
 	Returns:
 		a single merged data frame with all of the samples' data
 	"""
-	if not taxonomyLevel in TAXONOMY_HIERARCHY:
+	if taxonomyLevel not in TAXONOMY_HIERARCHY:
 		raise ValueError("taxonomy level ' + taxonomyLevel + ' is not recognized")
 
 	validateSampleDictTaxHistDict(sampleDictTaxHistDict)
@@ -115,17 +123,18 @@ def mergeAcrossSamples(sampleDictTaxHistDict, taxonomyLevel):
 		if first:
 			tmpDF = sampleDictTaxHistDict[sample][taxonomyLevel].drop('count', 1)
 			mergedPhylodistHist = tmpDF.rename(
-					columns = { 'percent' : sample }
-				)
+				columns={'percent': sample}
+			)
 		else:
 			tmpDF = sampleDictTaxHistDict[sample][taxonomyLevel].drop('count', 1)
 			tmpDF.rename(
-					columns = { 'percent' : sample },
-					inplace = True
-				)
-			mergedPhylodistHist = pd.merge(mergedPhylodistHist, tmpDF,
-					how="outer", left_index=True, right_index=True
-				)
+				columns={'percent': sample},
+				inplace=True
+			)
+			mergedPhylodistHist = pd.merge(
+				mergedPhylodistHist, tmpDF,
+				how="outer", left_index=True, right_index=True
+			)
 		first = False
 
 	return mergedPhylodistHist
