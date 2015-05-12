@@ -14,7 +14,7 @@ import pandas as pd
 
 writer = pd.ExcelWriter('output.xlsx')
 for taxonomyLevel in taxonomyDictTaxHist.keys():
-	taxonomyDictTaxHist[taxonomyLevel].to_excel(writer, taxonomyLevel)
+    taxonomyDictTaxHist[taxonomyLevel].to_excel(writer, taxonomyLevel)
 writer.save()
 
 #print(sampleDictTaxHistDict['exampleSample']['kingdom'])
@@ -25,3 +25,9 @@ writer.save()
 #print(taxHistograms['class'])
 #print(taxHistograms['order'])
 #print(taxHistograms['family'])
+
+import pip
+with open("requirements.txt", "w") as f:
+    for dist in pip.get_installed_distributions():
+        req = dist.as_requirement()
+        f.write(str(req) + "\n")
