@@ -7,11 +7,14 @@ class test_LoadFile(unittest.TestCase):
 
     def test_loadFile_filenameType(self):
         with self.assertRaises(TypeError):
-            io.loadFile(42, indexCol=0)
+            io.loadFile(42, indexCols=[0])
 
     def test_loadFile_indexColType(self):
         with self.assertRaises(TypeError):
-            io.loadFile('examples/metadata.tab', indexCol='1')
+            io.loadFile(
+                'examples/metadata.tab',
+                indexCols=0
+                )
 
     def test_loadFile_verboseType(self):
         with self.assertRaises(TypeError):
@@ -19,11 +22,11 @@ class test_LoadFile(unittest.TestCase):
 
     def test_loadFile_nonExistentFile(self):
         with self.assertRaises(IOError):
-            io.loadFile('file_does_not_exist', indexCol=0)
+            io.loadFile('file_does_not_exist', indexCols=[0])
 
     def test_loadFile_directoryNotFile(self):
         with self.assertRaises(IOError):
-            io.loadFile('examples', indexCol=0)
+            io.loadFile('examples', indexCols=[0])
 
 
 class test_defaultSampleNameExtractionFunction(unittest.TestCase):
