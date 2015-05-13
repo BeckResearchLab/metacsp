@@ -30,7 +30,10 @@ def loadFile(filename, verbose=False):
     # read the tab delimited file in
     data = list(csv.reader(open(filename, 'rb'), delimiter='\t'))
     if verbose:
-        print("found " + str(len(data)) + " records in file " + filename)
+        print('found {0:d} records in file {1}'.format(
+            len(data),
+            filename
+            ))
 
     # process records for sanity checking number of records
     #  and parse out the taxonomy string
@@ -41,9 +44,10 @@ def loadFile(filename, verbose=False):
         thisRecLen = len(record)
         if thisRecLen != EXPECTED_RECORD_LENGTH:
             raise ValueError(
-                "unexpected record length found on row " + str(row) +
-                " found " + str(thisRecLen) + " and expected " +
-                str(EXPECTED_RECORD_LENGTH)
+                'unexpected record length on row {0:d}' +
+                ' found {1:d} and expected {2:d}'.format(
+                    row, thisRecLen, EXPECTED_RECORD_LENGTH
+                    )
                 )
         # parse the taxonomy string
         taxString = record[TAXONOMY_FIELD]
@@ -51,10 +55,11 @@ def loadFile(filename, verbose=False):
         taxListLen = len(taxList)
         if taxListLen != EXPECTED_TAXONOMY_LENGTH:
             raise ValueError(
-                "unexpected taxonomy length found on row " + str(row) +
-                " found " + str(taxListLen) + " and expected " +
-                str(EXPECTED_TAXONOMY_LENGTH)
-            )
+                'unexpected taxonomy length found on row {0:d}' +
+                ' found {1} and expected {2}'.format(
+                    row, taxListLen, EXPECTED_TAXONOMY_LENGTH
+                    )
+                )
         # replace the taxonomy string with the list in our record
         record.pop(TAXONOMY_FIELD)
         record.extend(taxList)
@@ -66,13 +71,14 @@ def loadFile(filename, verbose=False):
     return phylodistDataFrame
 
 
-def sweepFiles(rootDir, sampleNameExtractionFunction=None):
+def sweepFiles(rootDir, sampleNameExtractionFunction=None, metadata=None):
     """Walk a directory looking for phylodist files and load them
 
     Args:
         rootDir (str): the base directory from which to begin a walk
         sampleNameExtractionFunction (function): a function to use on
             the directory path to extract a key to use in the dictionary
+        metadata (DataFrame): a dataframe with metadata about the samples
 
     Returns:
         dictionary of pandas data frames with key of directory name
@@ -82,16 +88,21 @@ def sweepFiles(rootDir, sampleNameExtractionFunction=None):
         sampleNameExtractionFunction = defaultSampleNameExtractionFunction
 
     if not os.path.isdir(rootDir):
-        raise IOError(rootDir + " is not a directory")
+        raise IOError('{0} is not a directory'.format(rootDir))
+
+    if not metadata is None and not isinstance(metadata, pd.DataFrame):
+        raise TypeError('metadata argument must be None or a DataFrame')
 
     print(
-        "scanning " + rootDir +
-        " for files ending with ." + PHYLODIST_FILE_SUFFIX
-    )
+        'scanning {0} for files ending with {1}'.format(
+            rootDir,
+            PHYLODIST_FILE_SUFFIX
+            )
+        )
 
     phylodistSweepDict = {}
     for dirName, subdirList, fileList in os.walk(rootDir):
-        baseDir = string.split(dirName, "/")[-1]
+        baseDir = string.split(dirName, '/')[-1]
         if baseDir != IMG_DATA_DIRECTORY_NAME:
             continue
         # this is a directory that contains the IMG data directory
@@ -107,11 +118,12 @@ def sweepFiles(rootDir, sampleNameExtractionFunction=None):
             # add the key to the dictionary with the data frame
             phylodistSweepDict[sampleKey] = phylodistDataFrame
             print(
-                "found " + str(len(phylodistDataFrame.index)) +
-                " rows for sample " + sampleKey
-            )
+                'found {0:d} rows for sample {1}'.format(
+                    len(phylodistDataFrame.index), sampleKey
+                    )
+                )
 
-    print("found " + str(len(phylodistSweepDict)) + " files")
+    print('found {0:d} files'.format(len(phylodistSweepDict)))
 
     return phylodistSweepDict
 
@@ -128,4 +140,4 @@ def defaultSampleNameExtractionFunction(path):
     Returns
         string containing the parsed sample key
     """
-    return string.split(string.split(path, "[")[1], "]")[0]
+    return string.split(string.split(path, '[')[1], ']')[0]
