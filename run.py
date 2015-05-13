@@ -11,6 +11,8 @@ metadataDF = metadata.io.loadFile(
     DATA_ROOT + '/metadata.tab', indexCol=0, verbose=True
     )
 
+print metadataDF
+
 phylodistSampleDict = phylodist.io.sweepFiles(
     DATA_ROOT,
     sampleNameExtractionFunction=metadata.io.defaultSampleNameExtractionFunction
