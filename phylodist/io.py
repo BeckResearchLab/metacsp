@@ -90,7 +90,7 @@ def sweepFiles(rootDir, sampleNameExtractionFunction=None, metadata=None):
     if not os.path.isdir(rootDir):
         raise IOError('{0} is not a directory'.format(rootDir))
 
-    if not metadata is None and not isinstance(metadata, pd.DataFrame):
+    if metadata is not None and not isinstance(metadata, pd.DataFrame):
         raise TypeError('metadata argument must be None or a DataFrame')
 
     print(
