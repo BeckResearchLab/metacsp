@@ -10,8 +10,13 @@ import phylodist.histogram
 DATA_ROOT = 'examples/valid'
 
 metadataDF = metadata.io.loadFile(
-    DATA_ROOT + '/metadata.tab', indexCol=0, verbose=True
+    DATA_ROOT + '/metadata.tab', 
+    indexCols=['origin_O2', 'O2', 'week', 'replicate', 'sample'],
+    #indexCols=[2, 3, 4, 5, 0],
+    verbose=True
     )
+
+print metadataDF
 
 phylos = phylodist.io.sweepFiles(
     DATA_ROOT

@@ -6,12 +6,12 @@ from metadata.constants import (
 )
 
 
-def loadFile(filename, indexCol=None, verbose=False):
+def loadFile(filename, indexCols=None, verbose=False):
     """Load a tab delimited metadata file and return pandas data frame
 
     Args:
         filename (str): path to a phylodist file
-        indexCol (int): column to use as an index
+        indexCols (list): list of columns to use as an index
         verbose (bool): if True will display information on the
             number of records found, silent otherwise
 
@@ -25,8 +25,8 @@ def loadFile(filename, indexCol=None, verbose=False):
     if os.path.isdir(filename):
         raise IOError('filename {0} is a directory'.format(filename))
 
-    if not isinstance(indexCol, int):
-        raise TypeError('indexCol must be an integer')
+    if not isinstance(indexCols, list):
+        raise TypeError('indexCols must be a list')
 
     if not isinstance(verbose, bool):
         raise TypeError('verbose argument must be a boolean')
@@ -34,7 +34,7 @@ def loadFile(filename, indexCol=None, verbose=False):
     # read the tsv
     metadataDataFrame = pd.read_csv(
         filename,
-        index_col=indexCol,
+        index_col=indexCols,
         delimiter='\t'
         )
     if verbose:
