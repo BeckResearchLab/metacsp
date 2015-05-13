@@ -66,20 +66,20 @@ def loadFile(filename, verbose=False):
     return phylodistDataFrame
 
 
-def sweepFiles(rootDir, keyExtractionFunction=None):
+def sweepFiles(rootDir, sampleNameExtractionFunction=None):
     """Walk a directory looking for phylodist files and load them
 
     Args:
         rootDir (str): the base directory from which to begin a walk
-        keyExtractionFunction (function): a function to use on the directory
-            path to extract a key to use in the dictionary
+        sampleNameExtractionFunction (function): a function to use on
+            the directory path to extract a key to use in the dictionary
 
     Returns:
         dictionary of pandas data frames with key of directory name
             containing the IMG data directory and value of phylodistDataFrames
     """
-    if keyExtractionFunction is None:
-        keyExtractionFunction = defaultKeyExtractionFunction
+    if sampleNameExtractionFunction is None:
+        sampleNameExtractionFunction = defaultSampleNameExtractionFunction
 
     if not os.path.isdir(rootDir):
         raise IOError(rootDir + " is not a directory")
@@ -103,7 +103,7 @@ def sweepFiles(rootDir, keyExtractionFunction=None):
             # valid phylodist file, let's load it!
             phylodistDataFrame = loadFile(dirName + "/" + filename)
             # parse the key using the user supplied function
-            sampleKey = keyExtractionFunction(dirName + "/" + filename)
+            sampleKey = sampleNameExtractionFunction(dirName + "/" + filename)
             # add the key to the dictionary with the data frame
             phylodistSweepDict[sampleKey] = phylodistDataFrame
             print(
@@ -116,7 +116,7 @@ def sweepFiles(rootDir, keyExtractionFunction=None):
     return phylodistSweepDict
 
 
-def defaultKeyExtractionFunction(path):
+def defaultSampleNameExtractionFunction(path):
     """Parse a sample ID to use as a dictionary key in samples
         Uses text in the first [] block it finds.  E.g.
         directory_path_with[aSampleKey]in_it/some_subdir/file

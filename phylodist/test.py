@@ -40,11 +40,11 @@ class test_LoadFile(unittest.TestCase):
         self.assertEquals(pdDF.at[97, 'locus_tag'], "Ga0066528_1383641")
 
 
-class test_defaultKeyExtractionFunction(unittest.TestCase):
+class test_defaultSampleNameExtractionFunction(unittest.TestCase):
 
-    def test_defaultKeyExtractionFunction_value(self):
+    def test_defaultSampleNameExtractionFunction_value(self):
         self.assertEquals(
-            io.defaultKeyExtractionFunction(
+            io.defaultSampleNameExtractionFunction(
                 "examples/valid/example[exampleSample]/" +
                 "IMG_Data/example.phylodist"
             ),
