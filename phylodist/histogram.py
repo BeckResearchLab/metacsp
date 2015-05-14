@@ -83,25 +83,39 @@ def validateSampleDictTaxHistDict(sampleDictTaxHistDict):
         )
 
 
-def mergeAcrossSamplesTaxLevels(sampleDictTaxHistDict):
+def mergeAcrossSamplesTaxLevels(sampleDictTaxHistDict, metadata=None):
     """Create a dictionary of data frames that are merged at taxonomy
         levels.  The key into this dictionary is the taxonomy level.
 
     Args:
         sampleDictTaxHistDict (dict): dictionary of phylodistDataFrames for
             all samples
+        metadata (DataFrame): a dataframe with metadata about the samples
 
     Returns:
-        a new dictionary with keys for eah taxonomy level containing
+        a new dictionary with keys for each taxonomy level containing
             a merged ataframe with histograms from all samples
     """
     validateSampleDictTaxHistDict(sampleDictTaxHistDict)
 
+    if metadata is not None and not isinstance(metadata, pd.DataFrame):
+        raise TypeError('metadata argument must be None or a DataFrame')
+
     taxonomyDictTaxHist = {}
     for taxonomyLevel in TAXONOMY_HIERARCHY:
-        taxonomyDictTaxHist[taxonomyLevel] = mergeAcrossSamples(
+        tmpDF = mergeAcrossSamples(
             sampleDictTaxHistDict, taxonomyLevel
-        )
+        ).T
+        tmpDF.index.name = "sample"
+        tmpDF = pd.merge(tmpDF, metadata, how="left", left_index=True, right_index=True)
+        tmpDF = tmpDF.T
+        if isinstance(tmpDF.index[0], tuple):
+            row0Tuple = tmpDF.index[0]
+            tmpDF.index = pd.MultiIndex.from_tuples(tmpDF.index)
+            tmpDF.names = TAXONOMY_HIERARCHY[0:len(row0Tuple)]
+        else:
+            tmpDF.index.name = taxonomyLevel
+        taxonomyDictTaxHist[taxonomyLevel] = tmpDF
 
     return taxonomyDictTaxHist
 

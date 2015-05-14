@@ -71,14 +71,13 @@ def loadFile(filename, verbose=False):
     return phylodistDataFrame
 
 
-def sweepFiles(rootDir, sampleNameExtractionFunction=None, metadata=None):
+def sweepFiles(rootDir, sampleNameExtractionFunction=None):
     """Walk a directory looking for phylodist files and load them
 
     Args:
         rootDir (str): the base directory from which to begin a walk
         sampleNameExtractionFunction (function): a function to use on
             the directory path to extract a key to use in the dictionary
-        metadata (DataFrame): a dataframe with metadata about the samples
 
     Returns:
         dictionary of pandas data frames with key of directory name
@@ -89,9 +88,6 @@ def sweepFiles(rootDir, sampleNameExtractionFunction=None, metadata=None):
 
     if not os.path.isdir(rootDir):
         raise IOError('{0} is not a directory'.format(rootDir))
-
-    if metadata is not None and not isinstance(metadata, pd.DataFrame):
-        raise TypeError('metadata argument must be None or a DataFrame')
 
     print(
         'scanning {0} for files ending with {1}'.format(
@@ -141,3 +137,35 @@ def defaultSampleNameExtractionFunction(path):
         string containing the parsed sample key
     """
     return string.split(string.split(path, '[')[1], ']')[0]
+
+
+def writeExcelTaxonomyDictTaxHist(filename, taxonomyDictTaxHist):
+    """Save a dictionary of taxonomy histograms that has
+        been merged across samples into an Excel workbook using
+        one sheet per taxonomy level
+
+    Args:
+        filename (str): the output filename, should end in .xlsx
+        taxonomyDictTaxHist (dict): a dictionary of taxonomy levels
+            where each entry is a pandas DataFrame with the merged
+            sample data.  This is generated from 
+            phylodist.histogram.mergeAcrossSamplesTaxLevels
+
+    Returns:
+        True
+    """
+
+    writer = pd.ExcelWriter(filename)
+    #, engine='xlsxwriter')
+    for taxonomyLevel in taxonomyDictTaxHist.keys():
+        taxonomyDictTaxHist[taxonomyLevel].to_excel(
+            writer, 
+            sheet_name=taxonomyLevel,
+            float_format='%.2f',
+            header=True,
+            index=True,
+            merge_cells=True
+            )
+    writer.save()
+
+    return True
