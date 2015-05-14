@@ -11,25 +11,26 @@ DATA_ROOT = 'examples/valid'
 
 metadataDF = metadata.io.loadFile(
     DATA_ROOT + '/metadata.tab', 
-    indexCols=['origin_O2', 'O2', 'week', 'replicate', 'sample'],
-    #indexCols=[2, 3, 4, 5, 0],
+    indexCols=['origin_O2', 'O2', 'week', 'replicate', 'sample', 'date'],
     verbose=True
     )
 
-print metadataDF
-
 phylos = phylodist.io.sweepFiles(
-    DATA_ROOT
+    DATA_ROOT,
+    sampleNameExtractionFunction=metadata.io.defaultSampleNameExtractionFunction,
     )
 
 sampleDictTaxHistDict = phylodist.histogram.computeAllForSamples(phylos)
-taxonomyDictTaxHist = phylodist.histogram.mergeAcrossSamplesTaxLevels(sampleDictTaxHistDict)
+taxonomyDictTaxHist = phylodist.histogram.mergeAcrossSamplesTaxLevels(
+    sampleDictTaxHistDict,
+    metadata=metadataDF
+    )
 
-print(sampleDictTaxHistDict['exampleSample']['kingdom'])
+print taxonomyDictTaxHist['kingdom']
 
-phylodist.histogram.plotForSamples(taxonomyDictTaxHist['class'])
+phylodist.io.writeExcelTaxonomyDictTaxHist('output.xlsx', taxonomyDictTaxHist)
 
-with open("requirements.txt", "w") as f:
-    for dist in pip.get_installed_distributions():
-        req = dist.as_requirement()
-        f.write(str(req) + "\n")
+#with open("requirements.txt", "w") as f:
+#    for dist in pip.get_installed_distributions():
+#        req = dist.as_requirement()
+#        f.write(str(req) + "\n")
