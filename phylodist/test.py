@@ -37,7 +37,7 @@ class test_LoadFile(unittest.TestCase):
             '61177.assembled.faa.phylodist',
             verbose=True
         )
-        self.assertEquals(len(pdDF.index), 30903)
+        self.assertEquals(len(pdDF.index), 10001)
         # spot check row 98's locus_tag
         self.assertEquals(pdDF.at[97, 'locus_tag'], 'Ga0066495_1324111')
 
