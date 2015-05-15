@@ -1,7 +1,8 @@
-#!/bin/env python
+#!/usr/bin/env python
 
 import pickle
-import matplotlib as plt
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
 import metadata.io
 
@@ -20,4 +21,10 @@ taxonomyDictTaxHist = pickle.load(
     open(DATA_ROOT + '/phylodist.pickle', 'rb')
     )
 
-
+# make a stacked bar as a test
+myDF = taxonomyDictTaxHist['family']
+pp = PdfPages('output.pdf')
+pp.savefig(
+    myDF.plot(kind='bar', stacked=True);
+    )
+pp.close()
