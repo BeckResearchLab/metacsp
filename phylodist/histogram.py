@@ -51,14 +51,14 @@ def computeAllForSamples(phylodistSweepDict):
     """
 
     sys.stdout.write(
-        "computing histograms across taxonomy hierarchy for samples"
+        'computing histograms across taxonomy hierarchy for samples'
         )
     sampleDictTaxHistDict = {}
     for key in phylodistSweepDict.keys():
-        sys.stdout.write(".")
+        sys.stdout.write('.')
         sys.stdout.flush()
         sampleDictTaxHistDict[key] = computeAll(phylodistSweepDict[key])
-    print("done")
+    print('done')
 
     return sampleDictTaxHistDict
 
@@ -75,11 +75,11 @@ def validateSampleDictTaxHistDict(sampleDictTaxHistDict):
         nothing, raises errors on sanity failures
     """
     if not isinstance(sampleDictTaxHistDict, dict):
-        raise TypeError("argument sampleDictTaxHistDict should be a dict")
+        raise TypeError('argument sampleDictTaxHistDict should be a dict')
     samples = len(sampleDictTaxHistDict)
     if samples < 1:
         raise ValueError(
-            "argument sampleDictTaxHistDict must have at least one entry"
+            'argument sampleDictTaxHistDict must have at least one entry'
         )
 
 
@@ -106,8 +106,8 @@ def mergeAcrossSamplesTaxLevels(sampleDictTaxHistDict, metadata=None):
         tmpDF = mergeAcrossSamples(
             sampleDictTaxHistDict, taxonomyLevel
         ).T
-        tmpDF.index.name = "sample"
-        tmpDF = pd.merge(tmpDF, metadata, how="left", left_index=True, right_index=True)
+        tmpDF.index.name = 'sample'
+        tmpDF = pd.merge(tmpDF, metadata, how='left', left_index=True, right_index=True)
         tmpDF = tmpDF.T
         if isinstance(tmpDF.index[0], tuple):
             row0Tuple = tmpDF.index[0]
@@ -120,7 +120,7 @@ def mergeAcrossSamplesTaxLevels(sampleDictTaxHistDict, metadata=None):
     return taxonomyDictTaxHist
 
 
-def mergeAcrossSamples(sampleDictTaxHistDict, taxonomyLevel):
+def mergeAcrossSamples(sampleDictTaxHistDict, taxonomyLevel, verbose=True):
     """Create a single data frame by merging all samples for a given
         taxonomy level
 
@@ -134,10 +134,16 @@ def mergeAcrossSamples(sampleDictTaxHistDict, taxonomyLevel):
     """
     if taxonomyLevel not in TAXONOMY_HIERARCHY:
         raise ValueError(
-            "taxonomy level ' + taxonomyLevel + ' is not recognized"
+            'taxonomy level {0} is not recognized'.format(taxonomyLevel)
             )
 
     validateSampleDictTaxHistDict(sampleDictTaxHistDict)
+
+    if verbose is True:
+        sys.stdout.write(
+            'merging across samples for {0} ... '.format(taxonomyLevel)
+            )
+        sys.stdout.flush()
 
     first = True
     for sample in sampleDictTaxHistDict.keys():
@@ -158,14 +164,17 @@ def mergeAcrossSamples(sampleDictTaxHistDict, taxonomyLevel):
             )
             mergedPhylodistHist = pd.merge(
                 mergedPhylodistHist, tmpDF,
-                how="outer", left_index=True, right_index=True
+                how='outer', left_index=True, right_index=True
             )
         first = False
+
+    if verbose is True:
+        sys.stdout.write('done')
 
     return mergedPhylodistHist
 
 
-def plotForSamples(mergedPhylodistHist):
+def plotForSamples(mergedPhylodistHist, filename):
     """Create a stacked bar chart for the taxonomy abundance percentages
         from a merged phylodist histogram
 
@@ -180,4 +189,4 @@ def plotForSamples(mergedPhylodistHist):
     """
     plot = mergedPhylodistHist.T.plot(kind='bar', stacked=True, legend=False)
     fig = plot.get_figure()
-    fig.savefig("output.png")
+    fig.savefig(filename)
