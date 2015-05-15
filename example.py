@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/bin/env python
 
 import pip
 
@@ -6,6 +6,7 @@ import metadata.io
 
 import phylodist.io
 import phylodist.histogram
+from phylodist.constants import TAXONOMY_HIERARCHY
 
 DATA_ROOT = 'examples/valid'
 
@@ -26,11 +27,15 @@ taxonomyDictTaxHist = phylodist.histogram.mergeAcrossSamplesTaxLevels(
     metadata=metadataDF
     )
 
-print taxonomyDictTaxHist['kingdom']
+# filter at 2.5% abundance
+for taxonomyLevel in TAXONOMY_HIERARCHY:
+    dF = taxonomyDictTaxHist[taxonomyLevel]
+    taxonomyDictTaxHist[taxonomyLevel] = dF.where(dF >= 2.5)
+    taxonomyDictTaxHist[taxonomyLevel].dropna(how='all', inplace=True)
 
 phylodist.io.writeExcelTaxonomyDictTaxHist('output.xlsx', taxonomyDictTaxHist)
 
-#with open("requirements.txt", "w") as f:
-#    for dist in pip.get_installed_distributions():
-#        req = dist.as_requirement()
-#        f.write(str(req) + "\n")
+with open("requirements.txt", "w") as f:
+    for dist in pip.get_installed_distributions():
+        req = dist.as_requirement()
+        f.write(str(req) + "\n")

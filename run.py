@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/bin/env python
 
 import metadata.io
 
@@ -8,10 +8,10 @@ import phylodist.histogram
 DATA_ROOT = '/dacb/globus'
 
 metadataDF = metadata.io.loadFile(
-    DATA_ROOT + '/metadata.tab', indexCol=0, verbose=True
+    DATA_ROOT + '/metadata.tab',
+    indexCols=['origin_O2', 'O2', 'week', 'replicate', 'sample', 'date', 'type'],
+    verbose=True
     )
-
-print metadataDF
 
 phylodistSampleDict = phylodist.io.sweepFiles(
     DATA_ROOT,
@@ -23,10 +23,18 @@ sampleDictTaxHistDict = phylodist.histogram.computeAllForSamples(
     )
 
 taxonomyDictTaxHist = phylodist.histogram.mergeAcrossSamplesTaxLevels(
-    sampleDictTaxHistDict
+    sampleDictTaxHistDict,
+    metadata=metadataDF
 )
 
-writer = pd.ExcelWriter('output.xlsx')
-for taxonomyLevel in taxonomyDictTaxHist.keys():
-    taxonomyDictTaxHist[taxonomyLevel].to_excel(writer, taxonomyLevel)
-writer.save()
+# filter at 2.5% abundance
+for taxonomyLevel in TAXONOMY_HIERARCHY:
+    dF = taxonomyDictTaxHist[taxonomyLevel]
+    taxonomyDictTaxHist[taxonomyLevel] = dF.where(dF >= 2.5)
+    taxonomyDictTaxHist[taxonomyLevel].dropna(how='all', inplace=True)
+
+
+phylodist.io.writeExcelTaxonomyDictTaxHist(
+    DATA_ROOT + '/phylodist.xlsx',
+    taxonomyDictTaxHist
+    )
