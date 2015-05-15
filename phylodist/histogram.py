@@ -171,7 +171,7 @@ def mergeAcrossSamples(sampleDictTaxHistDict, taxonomyLevel, verbose=True):
         first = False
 
     if verbose is True:
-        sys.stdout.write('done')
+        print('done')
 
     return mergedPhylodistHist
 
