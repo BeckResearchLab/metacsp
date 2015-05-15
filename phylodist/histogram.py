@@ -107,7 +107,9 @@ def mergeAcrossSamplesTaxLevels(sampleDictTaxHistDict, metadata=None):
             sampleDictTaxHistDict, taxonomyLevel
         ).T
         tmpDF.index.name = 'sample'
-        tmpDF = pd.merge(tmpDF, metadata, how='left', left_index=True, right_index=True)
+        tmpDF = pd.merge(
+            tmpDF, metadata, how='left', left_index=True, right_index=True
+            )
         tmpDF = tmpDF.T
         if isinstance(tmpDF.index[0], tuple):
             row0Tuple = tmpDF.index[0]

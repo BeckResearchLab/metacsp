@@ -148,7 +148,7 @@ def writeExcelTaxonomyDictTaxHist(filename, taxonomyDictTaxHist):
         filename (str): the output filename, should end in .xlsx
         taxonomyDictTaxHist (dict): a dictionary of taxonomy levels
             where each entry is a pandas DataFrame with the merged
-            sample data.  This is generated from 
+            sample data.  This is generated from
             phylodist.histogram.mergeAcrossSamplesTaxLevels
 
     Returns:
@@ -156,10 +156,9 @@ def writeExcelTaxonomyDictTaxHist(filename, taxonomyDictTaxHist):
     """
 
     writer = pd.ExcelWriter(filename)
-    #, engine='xlsxwriter')
     for taxonomyLevel in taxonomyDictTaxHist.keys():
         taxonomyDictTaxHist[taxonomyLevel].to_excel(
-            writer, 
+            writer,
             sheet_name=taxonomyLevel,
             float_format='%.2f',
             header=True,
